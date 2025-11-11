@@ -6,8 +6,9 @@ STOCKS=AAPL,MSFT,GOOGL,AMZN,TSLA
 
 # Alpaca Trading API (for executing trades)
 # Get your API keys from: https://alpaca.markets/
-ALPACA_API_KEY=PKDGII4UKEIRSLM5KUTBV4GZ7W
-ALPACA_SECRET_KEY=FpjyeZbKeZFzHA3gbrp2Tb4ZhARzMTwPuenk5P2s3x5R
+# IMPORTANT: Never commit real API keys to git!
+ALPACA_API_KEY=your_alpaca_api_key_here
+ALPACA_SECRET_KEY=your_alpaca_secret_key_here
 ALPACA_BASE_URL=https://paper-api.alpaca.markets
 
 # Alpha Vantage API (for stock data - optional, free tier available)
