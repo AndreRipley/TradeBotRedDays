@@ -1,0 +1,14 @@
+# Trading Bot Dependencies
+
+# Core dependencies
+python-dotenv>=1.0.0
+requests>=2.31.0
+schedule>=1.2.0
+pytz>=2023.3
+
+# Trading API (Alpaca) - using newer alpaca-py SDK
+alpaca-py>=0.18.0
+
+# Optional: For better data fetching
+yfinance>=0.2.28
+

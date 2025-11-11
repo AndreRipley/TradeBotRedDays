@@ -1,0 +1,22 @@
+# Trading Bot Configuration Template
+# Copy this file to .env and fill in your values
+
+# Stock symbols to monitor (comma-separated)
+STOCKS=AAPL,MSFT,GOOGL,AMZN,TSLA
+
+# Alpaca Trading API (for executing trades)
+# Get your API keys from: https://alpaca.markets/
+ALPACA_API_KEY=PKDGII4UKEIRSLM5KUTBV4GZ7W
+ALPACA_SECRET_KEY=FpjyeZbKeZFzHA3gbrp2Tb4ZhARzMTwPuenk5P2s3x5R
+ALPACA_BASE_URL=https://paper-api.alpaca.markets
+
+# Alpha Vantage API (for stock data - optional, free tier available)
+# Get your API key from: https://www.alphavantage.co/support/#api-key
+ALPHA_VANTAGE_API_KEY=your_alpha_vantage_key_here
+
+# Trading Settings
+POSITION_SIZE=1000.0
+TIMEZONE=America/New_York
+LOG_LEVEL=INFO
+LOG_FILE=trading_bot.log
+
