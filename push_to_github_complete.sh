@@ -1,5 +1,5 @@
 #!/bin/bash
-# Complete git sync and push script
+# Complete git sync and push script - handles divergent branches
 
 cd /Users/andreripley/Desktop/TradeBot
 
@@ -14,7 +14,12 @@ if [ ! -d .git ]; then
     exit 1
 fi
 
+# Configure pull strategy to merge (safer than rebase)
+echo "⚙️  Configuring git pull strategy (merge)..."
+git config pull.rebase false
+
 # Show current status
+echo ""
 echo "📋 Current git status:"
 git status --short
 echo ""
@@ -45,12 +50,20 @@ else
     echo ""
 fi
 
-# Pull remote changes first
-echo "📥 Pulling remote changes..."
-if git pull origin main; then
+# Pull remote changes with merge strategy
+echo "📥 Pulling remote changes (merge strategy)..."
+if git pull origin main --no-rebase; then
     echo "✅ Pull successful"
 else
-    echo "⚠️  Pull had issues. Continuing anyway..."
+    echo "⚠️  Pull encountered merge conflicts. Please resolve manually."
+    echo ""
+    echo "To resolve conflicts:"
+    echo "1. Check which files have conflicts: git status"
+    echo "2. Edit the conflicted files"
+    echo "3. Run: git add <file>"
+    echo "4. Run: git commit"
+    echo "5. Run this script again"
+    exit 1
 fi
 echo ""
 
@@ -68,4 +81,3 @@ else
     echo "=========================================="
     exit 1
 fi
-
