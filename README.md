@@ -1,22 +1,70 @@
-# Trading Bot
+# Trading Bot - Improved Anomaly Detection Strategy
 
-A Python trading bot that automatically buys stocks at noon on days when the stock price has gone down (red days).
+An automated trading bot that uses statistical anomaly detection to identify and capitalize on oversold and overbought conditions in the stock market. The bot implements a sophisticated strategy with risk management features including stop-losses, trailing stops, and dynamic position sizing.
+
+## Strategy Overview
+
+The bot uses an **Improved Anomaly Buy+Sell Strategy** that:
+
+- **Detects statistical anomalies** in real-time using multiple technical indicators
+- **Trades on oversold conditions** (buy signals) and **overbought conditions** (sell signals)
+- **Manages risk** with stop-losses and trailing stops
+- **Adapts position sizing** based on stock performance
+- **Monitors continuously** during market hours for trading opportunities
 
 ## Features
 
-- ✅ Monitors multiple stocks simultaneously
-- ✅ Detects "red days" (days when stock price decreased)
-- ✅ Executes buy orders automatically at noon
-- ✅ Supports paper trading (Alpaca) and live trading
-- ✅ Configurable position sizing
-- ✅ Comprehensive logging
+- ✅ **Real-time anomaly detection** using Z-scores, RSI, price action, and volume analysis
+- ✅ **Continuous monitoring** - checks all stocks every minute during market hours
+- ✅ **Risk management** - 5% stop-loss and 5% trailing stop on all positions
+- ✅ **Dynamic position sizing** - increases size for winners, decreases for losers
+- ✅ **Position monitoring** - checks open positions every minute for stop-loss triggers
+- ✅ **30 diversified stocks** by default (across 7 sectors)
+- ✅ **Paper trading support** via Alpaca API
+- ✅ **Cloud deployment ready** - runs 24/7 on Google Cloud Run
+- ✅ **Comprehensive logging** and error handling
 
+## Strategy Details
+
+### Anomaly Detection
+
+The bot detects anomalies using multiple indicators:
+
+**Buy Signals (Oversold Conditions):**
+- Z-score < -2.0 (price 2+ standard deviations below 20-day mean)
+- Price drop > 3% in a day
+- Gap down > 2% from previous close
+- RSI < 30 (oversold)
+
+**Sell Signals (Overbought Conditions):**
+- Z-score > 2.0 (price 2+ standard deviations above mean)
+- Price rise > 3% in a day
+- Gap up > 2% from previous close
+- RSI > 70 (overbought)
+
+### Trading Logic
+
+1. **Severity Threshold**: Only trades anomalies with severity ≥ 1.0
+2. **Position Limits**: Won't buy if already holding that stock
+3. **Account Balance**: Checks buying power before each trade
+4. **Risk Management**: Stop-losses and trailing stops protect capital
+
+### Risk Management
+
+- **Stop-Loss**: 5% below entry price (fixed protection)
+- **Trailing Stop**: 5% below highest price reached (locks in gains)
+- **Position Monitoring**: Checks every minute during market hours
+- **Dynamic Sizing**: Adjusts position size based on win rate:
+  - Win rate ≥ 60%: +20% position size
+  - Win rate 50-60%: Normal size
+  - Win rate 40-50%: -20% position size
+  - Win rate < 40%: -40% position size
 
 ## Requirements
 
 - Python 3.8+
 - Trading API account (Alpaca recommended for paper trading)
-- Stock data API (Alpha Vantage - free tier available, or Yahoo Finance fallback)
+- Stock data API (Alpha Vantage - optional, Yahoo Finance fallback available)
 
 ## Installation
 
@@ -25,7 +73,6 @@ A Python trading bot that automatically buys stocks at noon on days when the sto
 2. Install dependencies:
 ```bash
 pip3 install -r requirements.txt
-# or: python3 -m pip install -r requirements.txt
 ```
 
 3. Copy `env_template.txt` to `.env` and configure:
@@ -34,123 +81,208 @@ cp env_template.txt .env
 ```
 
 4. Edit `.env` with your settings:
-   - **STOCKS**: Comma-separated list of stock symbols to monitor
+   - **STOCKS**: Comma-separated list of stock symbols (default: 30 stocks)
    - **ALPACA_API_KEY** & **ALPACA_SECRET_KEY**: For executing trades (get from https://alpaca.markets/)
-   - **ALPHA_VANTAGE_API_KEY**: Optional, for stock data (get from https://www.alphavantage.co/support/#api-key)
-   - **POSITION_SIZE**: Dollar amount to invest per stock per trade
+   - **ALPACA_BASE_URL**: `https://paper-api.alpaca.markets` for paper trading
+   - **ALPHA_VANTAGE_API_KEY**: Optional, for stock data
+   - **POSITION_SIZE**: Dollar amount per stock (default: $1000.0)
+   - **TIMEZONE**: Market timezone (default: `America/New_York`)
 
 ## Usage
 
-## Running the Bot
+### Running Locally
 
-### Option 1: Run in Foreground (for testing)
+**Foreground (for testing):**
 ```bash
 python3 main.py
-# Note: On macOS, use python3 instead of python
 # Press Ctrl+C to stop
 ```
 
-### Option 2: Run in Background (recommended for continuous operation)
+**Background:**
 ```bash
-# Start the bot in background
-./start_bot.sh
-
-# Check if bot is running
-./check_bot.sh
-
-# Stop the bot
-./stop_bot.sh
+./start_bot.sh    # Start bot
+./check_bot.sh    # Check status
+./stop_bot.sh     # Stop bot
 ```
 
-### Option 3: Using screen/tmux (keeps running after terminal closes)
+### Cloud Deployment (Recommended for 24/7 Operation)
+
+Deploy to Google Cloud Run for continuous operation:
+
 ```bash
-# Install screen (if not installed)
-# macOS: brew install screen
-
-# Start a screen session
-screen -S trading_bot
-
-# Run the bot
-python3 main.py
-
-# Detach: Press Ctrl+A then D
-# Reattach: screen -r trading_bot
+bash deploy_fix_permissions.sh
 ```
 
-### Option 4: Run on a Cloud Server (best for 24/7 operation)
-- Deploy to AWS EC2, Google Cloud, DigitalOcean, etc.
-- Use a process manager like `systemd` or `supervisord`
-- Or use a cloud function/serverless option
-
-The bot will:
-1. Check every minute if it's noon
-2. At noon, check each configured stock to see if it's a "red day"
-3. If it's a red day, execute a buy order for that stock
-4. Log all activities to console and `trading_bot.log`
-
-### Configuration
-
-Edit `config.py` or `.env` to customize:
-
-- **Stocks to monitor**: Set `STOCKS` environment variable
-- **Trade time**: Default is `12:00` (noon), change `TRADE_TIME` in config
-- **Position size**: Set `POSITION_SIZE` in dollars
-- **Timezone**: Default is `America/New_York` (US market timezone)
+See `GCP_DEPLOYMENT.md` and `CLOUD_RUN_ENV_VARS.md` for detailed instructions.
 
 ## How It Works
 
-1. **Red Day Detection**: Compares current stock price with previous day's closing price
-2. **Scheduling**: Uses `schedule` library to trigger trades at noon daily
-3. **Trading**: Executes market buy orders via Alpaca API (or simulates if no API key)
+### Trading Schedule
+
+- **Signal Detection**: Every 1 minute during market hours (9:30 AM - 4:00 PM ET, weekdays)
+- **Position Monitoring**: Every 1 minute during market hours
+- **Stocks Monitored**: 30 stocks by default (configurable)
+
+### Trading Process
+
+1. **Every Minute During Market Hours:**
+   - Fetches recent price data for all monitored stocks
+   - Calculates technical indicators (Z-score, RSI, volume, gaps)
+   - Detects anomalies and calculates severity scores
+   - Executes trades if severity ≥ 1.0 and conditions are met
+   - Checks existing positions for stop-loss/trailing stop triggers
+
+2. **Buy Signal Execution:**
+   - Checks account balance and buying power
+   - Calculates dynamic position size based on stock performance
+   - Executes buy order via Alpaca API
+   - Sets stop-loss and trailing stop prices
+   - Tracks position for monitoring
+
+3. **Sell Signal Execution:**
+   - Detects overbought conditions (severity ≥ 3.0)
+   - Executes sell order
+   - Calculates profit/loss
+   - Updates performance tracking
+
+4. **Position Monitoring:**
+   - Checks current price every minute
+   - Updates trailing stop if price increases
+   - Executes sell if stop-loss or trailing stop triggered
+   - Protects capital from rapid declines
+
+## Default Stock List
+
+The bot monitors 30 diversified stocks by default:
+
+**Technology (11):** AAPL, MSFT, GOOGL, AMZN, NVDA, META, TSLA, ADBE, CSCO, NFLX, ACN  
+**Finance (3):** V, JPM, MA  
+**Healthcare (7):** UNH, JNJ, LLY, MRK, ABBV, ABT, TMO  
+**Consumer (4):** WMT, PG, COST, MCD  
+**Energy (2):** XOM, CVX  
+**Industrial (2):** HD, AVGO  
+**Consumer Staples (1):** PEP
+
+See `STOCK_LISTS.md` for 20-stock and 50-stock alternatives.
+
+## Configuration
+
+### Environment Variables
+
+- **STOCKS**: Comma-separated stock symbols (no spaces)
+- **POSITION_SIZE**: Dollar amount per stock (default: 1000.0)
+- **TIMEZONE**: Market timezone (default: America/New_York)
+- **LOG_LEVEL**: DEBUG, INFO, WARNING, ERROR (default: INFO)
+
+### Strategy Parameters
+
+Configured in `scheduler.py`:
+- `min_severity`: 1.0 (minimum anomaly severity to trade)
+- `stop_loss_pct`: 0.05 (5% stop-loss)
+- `trailing_stop_pct`: 0.05 (5% trailing stop)
 
 ## API Setup
 
-### Alpaca (Recommended for Paper Trading)
+### Alpaca (Required for Trading)
 
 1. Sign up at https://alpaca.markets/
 2. Get your API keys from the dashboard
 3. Use paper trading URL: `https://paper-api.alpaca.markets`
-4. Add keys to `.env`
+4. Add keys to `.env` or Cloud Run environment variables
 
-### Alpha Vantage (Optional - Stock Data)
+### Alpha Vantage (Optional)
 
 1. Get free API key from https://www.alphavantage.co/support/#api-key
 2. Add to `.env` as `ALPHA_VANTAGE_API_KEY`
-3. If not provided, bot will use Yahoo Finance (free, no API key needed)
+3. If not provided, bot uses Yahoo Finance (free, no API key needed)
+
+## Monitoring & Logs
+
+### View Logs
+
+**Local:**
+```bash
+tail -f trading_bot.log
+```
+
+**Cloud Run:**
+```bash
+bash view_logs.sh          # View recent logs
+bash stream_logs.sh         # Stream logs (polling)
+bash check_cloud_bot.sh     # Check bot status
+```
+
+**Browser:**
+- Go to Google Cloud Console → Cloud Run → trading-bot → LOGS tab
+
+### What to Look For
+
+- `🟢 BUY SIGNAL detected` - Anomaly detected, trade executed
+- `🔴 SELL SIGNAL detected` - Overbought condition or stop-loss triggered
+- `🔍 Monitoring X positions` - Position monitoring active
+- `💰 Account Balance` - Buying power check before trades
+- `⚠️ INSUFFICIENT BUYING POWER` - Need to add funds
 
 ## Safety Features
 
-- Paper trading mode by default (Alpaca)
-- Simulated orders if no API credentials provided
-- Comprehensive error handling and logging
-- Configurable position sizing
+- **Paper trading mode** by default (Alpaca)
+- **Account balance checking** before trades
+- **Stop-losses** limit downside risk
+- **Trailing stops** protect profits
+- **Dynamic position sizing** reduces risk on losing stocks
+- **Comprehensive error handling** and logging
+- **Simulated orders** if no API credentials provided
 
-## Logging
+## Expected Performance
 
-Logs are written to:
-- Console (INFO level and above)
-- `trading_bot.log` file (all levels)
+- **Trade Frequency**: 0-5 trades per day (strategy is selective)
+- **Win Rate**: Varies by market conditions
+- **Risk Management**: Stop-losses limit losses to 5% per position
+- **Capital Utilization**: Monitors 30 stocks, trades when opportunities arise
+
+The strategy prioritizes **quality over quantity** - waiting for significant anomalies rather than trading constantly.
+
+## Troubleshooting
+
+### Low Trade Frequency
+
+This is **normal** - the strategy is selective:
+- Only trades anomalies with severity ≥ 1.0
+- Requires specific conditions (oversold/overbought)
+- Won't buy if already holding a stock
+- See `TROUBLESHOOTING_LOW_TRADES.md` for details
+
+### Insufficient Buying Power
+
+- Add funds to Alpaca paper account: https://app.alpaca.markets/paper/dashboard/account
+- Or reduce `POSITION_SIZE` in environment variables
+- See `FIX_BUYING_POWER.md` for solutions
+
+### Other Issues
+
+- **"command not found: python"**: Use `python3` on macOS
+- **No trades executing**: Check logs, verify API keys, ensure market hours
+- **API errors**: Verify credentials and rate limits
+- **Price data issues**: Check internet connection
 
 ## Important Notes
 
 ⚠️ **DISCLAIMER**: This bot is for educational purposes. Always test with paper trading first. Trading involves risk of financial loss. Use at your own risk.
 
-- **Cursor/IDE**: You can close Cursor - the bot runs independently as a Python process
-- **Computer**: Your computer must stay on (or use a cloud server for 24/7 operation)
-- **Terminal**: If running in foreground, keep terminal open. Use background mode or screen/tmux to avoid this
-- The bot runs continuously - use `Ctrl+C` or `./stop_bot.sh` to stop
-- Ensure your system clock is accurate
-- Bot checks at noon in the configured timezone
-- Only executes on trading days (when markets are open)
+- **Cloud Deployment**: Bot runs 24/7 on Cloud Run (no computer needed)
+- **Market Hours**: Only trades 9:30 AM - 4:00 PM ET on weekdays
+- **Selective Trading**: Low trade frequency is intentional - strategy waits for good opportunities
+- **Risk Management**: Stop-losses and trailing stops protect capital
 
-## Troubleshooting
+## Documentation
 
-- **"command not found: python"**: On macOS, use `python3` instead of `python`
-- **No trades executing**: Check logs, verify API keys, ensure it's a trading day
-- **API errors**: Verify API credentials and rate limits
-- **Price data issues**: Check internet connection and API key validity
+- `CLOUD_RUN_ENV_VARS.md` - Environment variables guide
+- `GCP_DEPLOYMENT.md` - Google Cloud deployment instructions
+- `TROUBLESHOOTING_LOW_TRADES.md` - Why trade frequency is low
+- `FIX_BUYING_POWER.md` - Resolving insufficient buying power
+- `POSITION_CHECK_ANALYSIS.md` - Position monitoring frequency analysis
+- `STOCK_LISTS.md` - Stock list options (20, 30, 50 stocks)
 
 ## License
 
 MIT License - Use at your own risk.
-
