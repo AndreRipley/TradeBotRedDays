@@ -1,0 +1,25 @@
+strategy,params,total_invested,total_value,profit_loss,return_pct,total_trades
+3 Consecutive Red Days,{'consecutive': 3},310.0,347.38,37.38,12.06,31
+2 Consecutive Red Days,{'consecutive': 2},650.0,715.47,65.47,10.07,65
+Red Day on Monday,{'day_num': 0},170.0,186.41,16.41,9.65,17
+Red Day (>1% drop),{'threshold': 0.01},670.0,727.91,57.91,8.64,67
+Red Day,{},1400.0,1517.62,117.62,8.4,140
+Red Day in Weak Week,{},770.0,834.23,64.23,8.34,77
+5% Drop from 5D High,"{'lookback': 5, 'drop_pct': 0.05}",400.0,432.22,32.22,8.06,40
+3% Drop from 5D High,"{'lookback': 5, 'drop_pct': 0.03}",890.0,960.49,70.49,7.92,89
+Red Day Below MA5,{'ma_period': 5},950.0,1020.8,70.8,7.45,95
+Red Day Below MA20,{'ma_period': 20},370.0,395.4,25.4,6.86,37
+Red Day on Friday,{'day_num': 4},290.0,309.49,19.49,6.72,29
+Red Day After Green Day,{},720.0,766.11,46.11,6.4,72
+5% Drop from 10D High,"{'lookback': 10, 'drop_pct': 0.05}",460.0,489.38,29.38,6.39,46
+3% Drop from 10D High,"{'lookback': 10, 'drop_pct': 0.03}",990.0,1052.35,62.35,6.3,99
+Red Day + Volume Spike,{},130.0,138.17,8.17,6.28,13
+Red Day Below MA10,{'ma_period': 10},650.0,690.08,40.08,6.17,65
+Red Day + High Volatility,{},610.0,646.98,36.98,6.06,61
+Red Day (>3% drop),{'threshold': 0.03},160.0,168.86,8.86,5.54,16
+3% Drop from 20D High,"{'lookback': 20, 'drop_pct': 0.03}",1000.0,1051.68,51.68,5.17,100
+5% Drop from 20D High,"{'lookback': 20, 'drop_pct': 0.05}",530.0,555.33,25.33,4.78,53
+Red Day (>2% drop),{'threshold': 0.02},250.0,261.39,11.39,4.56,25
+10% Drop from 10D High,"{'lookback': 10, 'drop_pct': 0.1}",30.0,30.38,0.38,1.27,3
+10% Drop from 20D High,"{'lookback': 20, 'drop_pct': 0.1}",30.0,30.38,0.38,1.27,3
+Red Day (>5% drop),{'threshold': 0.05},30.0,29.91,-0.09,-0.3,3

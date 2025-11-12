@@ -1,8 +1,8 @@
 """
-Trading executor module for executing buy orders.
+Trading executor module for executing buy and sell orders.
 """
 import logging
-from typing import Optional
+from typing import Optional, Dict
 from config import Config
 
 logger = logging.getLogger(__name__)
@@ -116,6 +116,93 @@ class Trader:
             logger.error(f"Error executing Alpaca order for {symbol}: {e}")
             return False
     
+    def sell_stock(self, symbol: str, shares: Optional[float] = None) -> bool:
+        """
+        Execute a sell order for a stock.
+        
+        Args:
+            symbol: Stock symbol to sell
+            shares: Number of shares to sell (defaults to all shares in position)
+            
+        Returns:
+            True if order was successful, False otherwise
+        """
+        try:
+            if self.client:
+                return self._execute_alpaca_sell_order(symbol, shares)
+            else:
+                return self._simulate_sell_order(symbol, shares)
+                
+        except Exception as e:
+            logger.error(f"Error executing sell order for {symbol}: {e}")
+            return False
+    
+    def _execute_alpaca_sell_order(self, symbol: str, shares: Optional[float] = None) -> bool:
+        """Execute sell order using Alpaca API."""
+        try:
+            # Get current position if shares not specified
+            if shares is None:
+                positions = self.client.get_all_positions()
+                position = next((p for p in positions if p.symbol == symbol), None)
+                if not position:
+                    logger.warning(f"No position found for {symbol}")
+                    return False
+                shares = float(position.qty)
+            
+            if shares < 1:
+                logger.warning(f"Not enough shares to sell for {symbol}")
+                return False
+            
+            # Get current price
+            from alpaca.data.historical import StockHistoricalDataClient
+            from alpaca.data.requests import StockLatestQuoteRequest
+            
+            data_client = StockHistoricalDataClient(
+                api_key=self.api_key,
+                secret_key=self.secret_key
+            )
+            
+            quote_request = StockLatestQuoteRequest(symbol_or_symbols=[symbol])
+            quote = data_client.get_stock_latest_quote(quote_request)
+            
+            if symbol not in quote:
+                logger.error(f"No quote data available for {symbol}")
+                return False
+            
+            current_price = float(quote[symbol].bid_price)
+            quantity = int(shares)
+            
+            # Create market order
+            market_order_data = self.MarketOrderRequest(
+                symbol=symbol,
+                qty=quantity,
+                side=self.OrderSide.SELL,
+                time_in_force=self.TimeInForce.DAY
+            )
+            
+            order = self.client.submit_order(order_data=market_order_data)
+            
+            logger.info(
+                f"✅ SELL ORDER EXECUTED: {quantity} shares of {symbol} "
+                f"at ~${current_price:.2f} (${quantity * current_price:.2f} total)"
+            )
+            logger.info(f"Order ID: {order.id}")
+            
+            return True
+            
+        except Exception as e:
+            logger.error(f"Error executing Alpaca sell order for {symbol}: {e}")
+            return False
+    
+    def _simulate_sell_order(self, symbol: str, shares: Optional[float] = None) -> bool:
+        """Simulate sell order execution (for testing without API credentials)."""
+        shares_str = f"{shares:.2f} shares" if shares else "all shares"
+        logger.info(
+            f"🔵 SIMULATED SELL ORDER: {symbol} - {shares_str} "
+            f"(No API credentials configured)"
+        )
+        return True
+    
     def _simulate_order(self, symbol: str, dollar_amount: float) -> bool:
         """Simulate order execution (for testing without API credentials)."""
         logger.info(
@@ -123,4 +210,22 @@ class Trader:
             f"(No API credentials configured)"
         )
         return True
+    
+    def get_position(self, symbol: str) -> Optional[Dict]:
+        """Get current position for a symbol."""
+        try:
+            if self.client:
+                positions = self.client.get_all_positions()
+                position = next((p for p in positions if p.symbol == symbol), None)
+                if position:
+                    return {
+                        'symbol': position.symbol,
+                        'shares': float(position.qty),
+                        'avg_entry_price': float(position.avg_entry_price),
+                        'market_value': float(position.market_value)
+                    }
+            return None
+        except Exception as e:
+            logger.error(f"Error getting position for {symbol}: {e}")
+            return None
 

@@ -1,0 +1,4 @@
+period,days,start_date,end_date,return_pct,win_rate_pct,total_trades,buy_trades,sell_trades,total_invested,total_value,total_profit_loss,profitable_stocks,total_stocks,stop_loss_triggers,trailing_stop_triggers,overbought_sells
+1 Month,30,2025-10-11,2025-11-10,0.0,0.0,0,0,0,0.0,0.0,0.0,0,50,0,0,0
+3 Months,90,2025-08-12,2025-11-10,37.39,88.0,567,313,254,2726.0,3745.21,1019.21,44,50,66,120,68
+6 Months,180,2025-05-14,2025-11-10,23.61,90.0,1226,576,650,5488.0,6783.47,1295.47,45,50,103,338,209

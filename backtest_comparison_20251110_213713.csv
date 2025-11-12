@@ -1,0 +1,16 @@
+Symbol,Strategy,Trades,Invested,Current_Value,Profit_Loss,Return_Pct
+AAPL,Red Day Strategy,28,280.0,308.14,28.14,10.05
+MSFT,Red Day Strategy,31,310.0,301.06,-8.94,-2.88
+GOOGL,Red Day Strategy,26,260.0,304.51,44.51,17.12
+AMZN,Red Day Strategy,27,270.0,293.71,23.71,8.78
+TSLA,Red Day Strategy,28,280.0,310.2,30.2,10.79
+AAPL,Green Day Strategy,34,340.0,365.6,25.6,7.53
+MSFT,Green Day Strategy,31,310.0,299.35,-10.65,-3.43
+GOOGL,Green Day Strategy,36,360.0,416.68,56.68,15.74
+AMZN,Green Day Strategy,35,350.0,373.22,23.22,6.63
+TSLA,Green Day Strategy,34,340.0,357.87,17.87,5.26
+AAPL,Buy Every Day Strategy,62,620.0,673.74,53.74,8.67
+MSFT,Buy Every Day Strategy,62,620.0,600.41,-19.59,-3.16
+GOOGL,Buy Every Day Strategy,62,620.0,721.18,101.18,16.32
+AMZN,Buy Every Day Strategy,62,620.0,666.92,46.92,7.57
+TSLA,Buy Every Day Strategy,62,620.0,668.07,48.07,7.75

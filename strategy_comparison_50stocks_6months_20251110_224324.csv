@@ -1,0 +1,5 @@
+Strategy,Return %,Win Rate %,Total Trades,Total Invested,Total Profit,Profitable Stocks,Total Stocks
+Red Day,2.41,52.0,2943,29430.0,709.19,26,50
+Anomaly Detection (Buy Only),-48.42,74.0,915,5760.0,-2788.94,37,50
+Anomaly Detection (Buy + Sell),-48.42,74.0,915,5760.0,-2788.94,37,50
+Statistical Arbitrage,-0.05,38.0,155,1420.0,-0.68,19,50

@@ -1,0 +1,6 @@
+Symbol,Anomalies_Detected,Trades,Invested,Current_Value,Profit_Loss,Return_Pct
+AAPL,51,42,420.0,520.4,100.4,23.9
+MSFT,53,39,390.0,451.18,61.18,15.69
+GOOGL,45,36,360.0,557.46,197.46,54.85
+AMZN,54,45,450.0,530.21,80.21,17.82
+TSLA,80,75,750.0,993.44,243.44,32.46

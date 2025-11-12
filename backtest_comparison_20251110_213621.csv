@@ -1,0 +1,11 @@
+Symbol,Strategy,Trades,Invested,Current_Value,Profit_Loss,Return_Pct
+AAPL,Red Day,28,280.0,308.14,28.14,10.05
+MSFT,Red Day,31,310.0,301.06,-8.94,-2.88
+GOOGL,Red Day,26,260.0,304.51,44.51,17.12
+AMZN,Red Day,27,270.0,293.71,23.71,8.78
+TSLA,Red Day,28,280.0,310.2,30.2,10.79
+AAPL,Buy Every Day,62,620.0,673.74,53.74,8.67
+MSFT,Buy Every Day,62,620.0,600.41,-19.59,-3.16
+GOOGL,Buy Every Day,62,620.0,721.18,101.18,16.32
+AMZN,Buy Every Day,62,620.0,666.92,46.92,7.57
+TSLA,Buy Every Day,62,620.0,668.07,48.07,7.75
